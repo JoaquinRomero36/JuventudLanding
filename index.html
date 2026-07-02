@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juventud CBA - Modelado de página</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<link rel="stylesheet" href="styles.css">
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+
+<!-- Pantalla de login, se muestra primero -->
+<div id="lock-screen" class="lock-screen">
+  <div class="lock-box">
+    <div class="hero-icon"><i class="ti ti-flame"></i></div>
+    <h1>Juventud CBA</h1>
+    <p>Iniciá sesión o registrate para ver el contenido.</p>
+    <button id="login-btn" class="btn-primary">Iniciar sesión / Registrarme</button>
+  </div>
+</div>
+
+<!-- Contenido real, oculto hasta loguearse -->
+<div class="wrap" id="site-content" style="display:none;">
+  <p class="label">Modelado de referencia — Juventud CBA</p>
+  <div class="card">
+
+    <div class="hero">
+      <div class="icon-box"><i class="ti ti-flame"></i></div>
+      <h1>Juventud CBA</h1>
+      <p>Un grupo de jóvenes adventistas en Córdoba que se junta para crecer en fe, en comunidad y en propósito.</p>
+      <p id="user-status" style="font-size:13px;color:#5f5e5a;margin-bottom:12px;"></p>
+      <button id="logout-btn" class="btn-primary" style="background:#5f5e5a;">Cerrar sesión</button>
+    </div>
+
+    <div class="section">
+      <h2>Quiénes somos</h2>
+      <p class="desc">Empezamos hace un año con un objetivo simple: que los jóvenes de Córdoba tengan un lugar donde conectar con Dios y entre ellos. Hoy somos un grupo que crece cada sábado.</p>
+    </div>
+
+    <div class="section">
+      <h2>Actividades</h2>
+      <div class="activity">
+        <div class="icon-box" style="background:#e6f1fb;"><i class="ti ti-music" style="color:#0c447c;"></i></div>
+        <div>
+          <p class="title">Encuentros semanales</p>
+          <p class="text">Sábados de noche. Worship, palabra y after.</p>
+        </div>
+      </div>
+      <div class="activity">
+        <div class="icon-box" style="background:#eaf3de;"><i class="ti ti-tent" style="color:#27500a;"></i></div>
+        <div>
+          <p class="title">Campamentos</p>
+          <p class="text">Varias veces al año, salimos de la rutina juntos.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Lo que dicen</h2>
+      <div class="testimonials">
+        <div class="testimonial">
+          <p class="quote">Acá encontré amigos de verdad.</p>
+          <p class="author">— Sofía, 19</p>
+        </div>
+        <div class="testimonial">
+          <p class="quote">Es el mejor momento de mi semana.</p>
+          <p class="author">— Nico, 23</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <h2>¿Tenés 15 a 35 años?</h2>
+      <p>No hace falta nada más que las ganas de venir.</p>
+      <button class="btn-whatsapp"><i class="ti ti-brand-whatsapp"></i> Escribinos por WhatsApp</button>
+    </div>
+
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
