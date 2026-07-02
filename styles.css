@@ -1,0 +1,94 @@
+/* styles.css */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f0efe9;
+  padding: 40px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.label {
+  text-align: center;
+  color: #888780;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.wrap {
+  max-width: 420px;
+  width: 100%;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 0.5px solid #d3d1c7;
+  overflow: hidden;
+}
+
+.hero {
+  background: #f7f6f2;
+  padding: 40px 24px 32px;
+  text-align: center;
+  border-bottom: 0.5px solid #d3d1c7;
+}
+
+.hero .icon-box {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: #e6f1fb;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.hero .icon-box i { font-size: 24px; color: #0c447c; }
+
+h1 { font-size: 22px; font-weight: 500; color: #1a1a18; margin-bottom: 8px; }
+h2 { font-size: 18px; font-weight: 500; color: #1a1a18; margin-bottom: 12px; }
+
+.hero p { font-size: 14px; color: #5f5e5a; line-height: 1.6; margin-bottom: 24px; }
+
+.btn-primary {
+  background: #1a1a18; color: #fff; border: none; width: 100%;
+  height: 44px; border-radius: 8px; font-size: 14px; font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-whatsapp {
+  background: #639922; color: #fff; border: none; width: 100%;
+  height: 44px; border-radius: 8px; font-size: 14px; font-weight: 500;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  cursor: pointer;
+}
+
+.section { padding: 28px 24px; border-bottom: 0.5px solid #d3d1c7; }
+.section p.desc { font-size: 14px; color: #5f5e5a; line-height: 1.7; }
+
+.activity {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: #f7f6f2; border-radius: 12px; padding: 16px;
+  border: 0.5px solid #d3d1c7; margin-bottom: 12px;
+}
+.activity:last-child { margin-bottom: 0; }
+
+.activity .icon-box {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.activity .icon-box i { font-size: 18px; }
+.activity .title { font-weight: 500; font-size: 14px; margin-bottom: 2px; }
+.activity .text { font-size: 13px; color: #5f5e5a; line-height: 1.5; }
+
+.testimonials { display: flex; gap: 12px; overflow-x: auto; }
+.testimonial {
+  min-width: 200px; background: #f7f6f2; border-radius: 12px;
+  padding: 16px; border: 0.5px solid #d3d1c7; flex-shrink: 0;
+}
+.testimonial p.quote { font-style: italic; font-size: 14px; margin-bottom: 8px; line-height: 1.6; }
+.testimonial p.author { font-size: 12px; color: #888780; }
+
+.cta { padding: 32px 24px; text-align: center; }
+.cta p { font-size: 13px; color: #5f5e5a; margin-bottom: 20px; }
