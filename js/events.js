@@ -1,7 +1,7 @@
 let eventsCache = null;
 
 async function loadEvents() {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('events')
     .select('*')
     .order('date', { ascending: true });
@@ -11,7 +11,7 @@ async function loadEvents() {
 }
 
 async function createEvent(event) {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('events')
     .insert({ ...event, created_by: currentUser.id })
     .select()
@@ -21,7 +21,7 @@ async function createEvent(event) {
 }
 
 async function updateEvent(id, updates) {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('events')
     .update(updates)
     .eq('id', id)
@@ -32,19 +32,19 @@ async function updateEvent(id, updates) {
 }
 
 async function deleteEvent(id) {
-  const { error } = await supabase.from('events').delete().eq('id', id);
+  const { error } = await sb.from('events').delete().eq('id', id);
   if (error) throw error;
 }
 
 async function registerForEvent(eventId) {
-  const { error } = await supabase
+  const { error } = await sb
     .from('registrations')
     .insert({ event_id: eventId, user_id: currentUser.id });
   if (error) throw error;
 }
 
 async function unregisterFromEvent(eventId) {
-  const { error } = await supabase
+  const { error } = await sb
     .from('registrations')
     .delete()
     .eq('event_id', eventId)
@@ -53,7 +53,7 @@ async function unregisterFromEvent(eventId) {
 }
 
 async function getUserRegistrations() {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('registrations')
     .select('event_id')
     .eq('user_id', currentUser.id);
@@ -62,7 +62,7 @@ async function getUserRegistrations() {
 }
 
 async function getRegistrationCount(eventId) {
-  const { count, error } = await supabase
+  const { count, error } = await sb
     .from('registrations')
     .select('*', { count: 'exact', head: true })
     .eq('event_id', eventId);

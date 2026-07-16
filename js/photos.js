@@ -1,7 +1,7 @@
 const PHOTOS_BUCKET = 'photos';
 
 async function loadPhotos(approvedOnly = true) {
-  let query = supabase.from('photos').select('*').order('created_at', { ascending: false });
+  let query = sb.from('photos').select('*').order('created_at', { ascending: false });
   if (approvedOnly) query = query.eq('approved', true);
   const { data, error } = await query;
   if (error) throw error;
@@ -12,16 +12,16 @@ async function uploadPhoto(file, description) {
   const ext = file.name.split('.').pop();
   const path = `${currentUser.id}/${Date.now()}.${ext}`;
 
-  const { error: uploadError } = await supabase.storage
+  const { error: uploadError } = await sb.storage
     .from(PHOTOS_BUCKET)
     .upload(path, file);
   if (uploadError) throw uploadError;
 
-  const { data: { publicUrl } } = supabase.storage
+  const { data: { publicUrl } } = sb.storage
     .from(PHOTOS_BUCKET)
     .getPublicUrl(path);
 
-  const { data, error: dbError } = await supabase
+  const { data, error: dbError } = await sb
     .from('photos')
     .insert({ url: publicUrl, description, uploaded_by: currentUser.id })
     .select()
@@ -31,14 +31,14 @@ async function uploadPhoto(file, description) {
 }
 
 async function approvePhoto(id) {
-  const { error } = await supabase.from('photos').update({ approved: true }).eq('id', id);
+  const { error } = await sb.from('photos').update({ approved: true }).eq('id', id);
   if (error) throw error;
 }
 
 async function deletePhoto(id, url) {
   const path = url.split('/photos/')[1];
-  if (path) await supabase.storage.from(PHOTOS_BUCKET).remove([path]);
-  const { error } = await supabase.from('photos').delete().eq('id', id);
+  if (path) await sb.storage.from(PHOTOS_BUCKET).remove([path]);
+  const { error } = await sb.from('photos').delete().eq('id', id);
   if (error) throw error;
 }
 

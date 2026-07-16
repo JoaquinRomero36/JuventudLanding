@@ -2,7 +2,7 @@ let currentUser = null;
 let currentProfile = null;
 
 async function checkSession() {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await sb.auth.getSession();
   if (session) {
     currentUser = session.user;
     await loadProfile();
@@ -11,7 +11,7 @@ async function checkSession() {
 }
 
 async function loadProfile() {
-  const { data } = await supabase
+  const { data } = await sb
     .from('profiles')
     .select('*')
     .eq('id', currentUser.id)
@@ -20,7 +20,7 @@ async function loadProfile() {
 }
 
 async function signUp(email, password, fullName) {
-  const { data, error } = await supabase.auth.signUp({
+  const { data, error } = await sb.auth.signUp({
     email,
     password,
     options: { data: { full_name: fullName } }
@@ -30,7 +30,7 @@ async function signUp(email, password, fullName) {
 }
 
 async function signIn(email, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
   if (error) throw error;
   currentUser = data.user;
   await loadProfile();
@@ -38,7 +38,7 @@ async function signIn(email, password) {
 }
 
 async function signOut() {
-  await supabase.auth.signOut();
+  await sb.auth.signOut();
   currentUser = null;
   currentProfile = null;
 }

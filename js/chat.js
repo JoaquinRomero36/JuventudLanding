@@ -1,5 +1,5 @@
 async function loadMessages() {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('messages')
     .select(`
       *,
@@ -13,7 +13,7 @@ async function loadMessages() {
 }
 
 async function loadReplies(parentId) {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('messages')
     .select(`
       *,
@@ -27,7 +27,7 @@ async function loadReplies(parentId) {
 }
 
 async function sendMessage(content, parentId = null) {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('messages')
     .insert({ content, parent_id: parentId, user_id: currentUser.id })
     .select()
@@ -37,12 +37,12 @@ async function sendMessage(content, parentId = null) {
 }
 
 async function deleteMessage(id) {
-  const { error } = await supabase.from('messages').delete().eq('id', id);
+  const { error } = await sb.from('messages').delete().eq('id', id);
   if (error) throw error;
 }
 
 async function toggleLike(messageId) {
-  const { data: existing } = await supabase
+  const { data: existing } = await sb
     .from('message_likes')
     .select('id')
     .eq('message_id', messageId)
@@ -50,16 +50,16 @@ async function toggleLike(messageId) {
     .maybeSingle();
 
   if (existing) {
-    const { error } = await supabase.from('message_likes').delete().eq('id', existing.id);
+    const { error } = await sb.from('message_likes').delete().eq('id', existing.id);
     if (error) throw error;
   } else {
-    const { error } = await supabase.from('message_likes').insert({ message_id: messageId, user_id: currentUser.id });
+    const { error } = await sb.from('message_likes').insert({ message_id: messageId, user_id: currentUser.id });
     if (error) throw error;
   }
 }
 
 async function hasLiked(messageId) {
-  const { data } = await supabase
+  const { data } = await sb
     .from('message_likes')
     .select('id')
     .eq('message_id', messageId)
