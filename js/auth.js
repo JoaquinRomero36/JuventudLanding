@@ -29,6 +29,8 @@ async function signUp(email, password, fullName) {
   return data;
 }
 
+
+
 async function signIn(email, password) {
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
   if (error) throw error;
@@ -88,11 +90,17 @@ function renderAuthForm(container) {
 
       if (isRegister) {
         const name = container.querySelector('#auth-name').value;
-        await signUp(email, password, name);
-        errorEl.textContent = 'Revisá tu email para confirmar la cuenta.';
-        errorEl.style.color = '#70AC73';
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Crear cuenta';
+        const result = await signUp(email, password, name);
+        if (result?.user?.identities?.length === 0) {
+          errorEl.textContent = 'Este email ya está registrado. Iniciá sesión.';
+          errorEl.style.color = '#B7502B';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Crear cuenta';
+          return;
+        }
+        await signIn(email, password);
+        closeModal();
+        await renderApp();
         return;
       }
 
