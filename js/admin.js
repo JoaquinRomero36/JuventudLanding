@@ -115,7 +115,7 @@ async function loadAndRenderPendingPhotos(list) {
           <p>${photo.description || 'Sin descripción'}</p>
           <div class="admin-photo-actions">
             <button class="btn-small btn-primary-solid" data-action="approve" data-id="${photo.id}">Aprobar</button>
-            <button class="btn-small btn-danger" data-action="delete" data-id="${photo.id}" data-url="${photo.url}">Rechazar</button>
+            <button class="btn-small btn-danger" data-action="delete" data-id="${photo.id}">Rechazar</button>
           </div>
         </div>
       `;
@@ -130,7 +130,7 @@ async function loadAndRenderPendingPhotos(list) {
 
       card.querySelector('[data-action="delete"]').addEventListener('click', async () => {
         try {
-          await deletePhoto(photo.id, photo.url);
+          await deletePhoto(photo.id);
           card.remove();
         } catch (err) { alert(err.message); }
       });

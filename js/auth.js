@@ -1,46 +1,75 @@
 let currentUser = null;
 let currentProfile = null;
+let gotrue = null;
+
+async function initAuth() {
+  if (typeof netlifyIdentity !== 'undefined') {
+    gotrue = netlifyIdentity.gotrue;
+  }
+}
+
+async function getToken() {
+  if (!gotrue) return null;
+  const user = gotrue.currentUser();
+  if (!user) return null;
+  try {
+    const token = await user.jwt();
+    return token;
+  } catch {
+    const u = gotrue.currentUser();
+    return u?.token?.access_token || null;
+  }
+}
+
+async function apiFetch(path, options = {}) {
+  const token = await getToken();
+  const headers = { 'Content-Type': 'application/json', ...options.headers };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const res = await fetch(`/.netlify/functions${path}`, { ...options, headers });
+  const json = await res.json();
+  if (json.error) throw new Error(json.error);
+  return json.data;
+}
 
 async function checkSession() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    currentUser = session.user;
+  if (!gotrue) return null;
+  const user = gotrue.currentUser();
+  if (user) {
+    currentUser = { id: user.id, email: user.email };
     await loadProfile();
+    return currentUser;
   }
-  return session;
+  return null;
 }
 
 async function loadProfile() {
-  const { data } = await sb
-    .from('profiles')
-    .select('*')
-    .eq('id', currentUser.id)
-    .single();
-  currentProfile = data;
+  try {
+    const data = await apiFetch('/profile');
+    currentProfile = data.profile;
+    currentUser = data.user;
+    return data;
+  } catch {
+    currentProfile = { role: 'user', fullName: '' };
+    return null;
+  }
 }
 
 async function signUp(email, password, fullName) {
-  const { data, error } = await sb.auth.signUp({
-    email,
-    password,
-    options: { data: { full_name: fullName } }
-  });
+  const { data, error } = await gotrue.signup(email, password, { full_name: fullName });
   if (error) throw error;
   return data;
 }
 
-
-
 async function signIn(email, password) {
-  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  const { data, error } = await gotrue.login(email, password, true);
   if (error) throw error;
-  currentUser = data.user;
+  currentUser = { id: data.id, email: data.email };
   await loadProfile();
   return data;
 }
 
 async function signOut() {
-  await sb.auth.signOut();
+  await gotrue.logout();
   currentUser = null;
   currentProfile = null;
 }

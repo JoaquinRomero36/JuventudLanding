@@ -1,45 +1,38 @@
-const PHOTOS_BUCKET = 'photos';
+const CLOUD_NAME = 'TU_CLOUD_NAME';
+const UPLOAD_PRESET = 'juventud_unsigned';
 
 async function loadPhotos(approvedOnly = true) {
-  let query = sb.from('photos').select('*').order('created_at', { ascending: false });
-  if (approvedOnly) query = query.eq('approved', true);
-  const { data, error } = await query;
-  if (error) throw error;
-  return data;
+  const params = approvedOnly ? '?onlyApproved=true' : '';
+  return apiFetch(`/photos${params}`);
 }
 
 async function uploadPhoto(file, description) {
-  const ext = file.name.split('.').pop();
-  const path = `${currentUser.id}/${Date.now()}.${ext}`;
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', UPLOAD_PRESET);
 
-  const { error: uploadError } = await sb.storage
-    .from(PHOTOS_BUCKET)
-    .upload(path, file);
-  if (uploadError) throw uploadError;
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+    method: 'POST',
+    body: formData
+  });
+  const cloudData = await res.json();
+  if (!res.ok) throw new Error(cloudData.error?.message || 'Error al subir imagen');
 
-  const { data: { publicUrl } } = sb.storage
-    .from(PHOTOS_BUCKET)
-    .getPublicUrl(path);
-
-  const { data, error: dbError } = await sb
-    .from('photos')
-    .insert({ url: publicUrl, description, uploaded_by: currentUser.id })
-    .select()
-    .single();
-  if (dbError) throw dbError;
-  return data;
+  return apiFetch('/photos', {
+    method: 'POST',
+    body: JSON.stringify({ url: cloudData.secure_url, description })
+  });
 }
 
 async function approvePhoto(id) {
-  const { error } = await sb.from('photos').update({ approved: true }).eq('id', id);
-  if (error) throw error;
+  return apiFetch('/photos', {
+    method: 'PUT',
+    body: JSON.stringify({ id })
+  });
 }
 
-async function deletePhoto(id, url) {
-  const path = url.split('/photos/')[1];
-  if (path) await sb.storage.from(PHOTOS_BUCKET).remove([path]);
-  const { error } = await sb.from('photos').delete().eq('id', id);
-  if (error) throw error;
+async function deletePhoto(id) {
+  return apiFetch(`/photos?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
 }
 
 function renderPhotoGallery(container, photos, editable = false) {
@@ -59,7 +52,7 @@ function renderPhotoGallery(container, photos, editable = false) {
     item.innerHTML = `
       <img src="${photo.url}" alt="${photo.description || 'Foto'}" loading="lazy">
       ${photo.description ? `<p class="photo-desc">${photo.description}</p>` : ''}
-      ${editable ? `<button class="photo-delete" data-id="${photo.id}" data-url="${photo.url}"><i class="ti ti-trash"></i></button>` : ''}
+      ${editable ? `<button class="photo-delete" data-id="${photo.id}"><i class="ti ti-trash"></i></button>` : ''}
     `;
     grid.appendChild(item);
   });
@@ -71,7 +64,7 @@ function renderPhotoGallery(container, photos, editable = false) {
       btn.addEventListener('click', async () => {
         if (!confirm('¿Eliminar esta foto?')) return;
         try {
-          await deletePhoto(btn.dataset.id, btn.dataset.url);
+          await deletePhoto(btn.dataset.id);
           btn.closest('.photo-item').remove();
         } catch (err) {
           alert(err.message);

@@ -1,71 +1,40 @@
 async function loadMessages() {
-  const { data, error } = await sb
-    .from('messages')
-    .select(`
-      *,
-      profiles!inner(full_name),
-      message_likes(count)
-    `)
-    .is('parent_id', null)
-    .order('created_at', { ascending: false });
-  if (error) throw error;
-  return data;
+  return apiFetch('/messages');
 }
 
 async function loadReplies(parentId) {
-  const { data, error } = await sb
-    .from('messages')
-    .select(`
-      *,
-      profiles!inner(full_name),
-      message_likes(count)
-    `)
-    .eq('parent_id', parentId)
-    .order('created_at', { ascending: true });
-  if (error) throw error;
-  return data;
+  const msgs = await loadMessages();
+  const msg = msgs.find(m => m.id === parentId);
+  return msg ? msg.replies : [];
 }
 
 async function sendMessage(content, parentId = null) {
-  const { data, error } = await sb
-    .from('messages')
-    .insert({ content, parent_id: parentId, user_id: currentUser.id })
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
+  return apiFetch('/messages', {
+    method: 'POST',
+    body: JSON.stringify({ content, parentId })
+  });
 }
 
 async function deleteMessage(id) {
-  const { error } = await sb.from('messages').delete().eq('id', id);
-  if (error) throw error;
+  return apiFetch(`/messages?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
 }
 
 async function toggleLike(messageId) {
-  const { data: existing } = await sb
-    .from('message_likes')
-    .select('id')
-    .eq('message_id', messageId)
-    .eq('user_id', currentUser.id)
-    .maybeSingle();
-
-  if (existing) {
-    const { error } = await sb.from('message_likes').delete().eq('id', existing.id);
-    if (error) throw error;
-  } else {
-    const { error } = await sb.from('message_likes').insert({ message_id: messageId, user_id: currentUser.id });
-    if (error) throw error;
-  }
+  return apiFetch('/likes', {
+    method: 'POST',
+    body: JSON.stringify({ messageId })
+  });
 }
 
 async function hasLiked(messageId) {
-  const { data } = await sb
-    .from('message_likes')
-    .select('id')
-    .eq('message_id', messageId)
-    .eq('user_id', currentUser.id)
-    .maybeSingle();
-  return !!data;
+  const msgs = await loadMessages();
+  for (const m of msgs) {
+    if (m.id === messageId) return m.userLiked;
+    for (const r of (m.replies || [])) {
+      if (r.id === messageId) return r.userLiked;
+    }
+  }
+  return false;
 }
 
 function renderChatSection(container) {
@@ -111,23 +80,21 @@ async function renderMessages(container) {
 
     container.innerHTML = '';
     for (const msg of messages) {
-      const likesCount = msg.message_likes?.[0]?.count || 0;
-      const liked = await hasLiked(msg.id);
-      const isOwner = currentUser?.id === msg.user_id;
+      const isOwner = currentUser?.id === msg.userId;
       const isAdmin = currentProfile?.role === 'admin';
 
       const el = document.createElement('div');
       el.className = 'chat-message';
       el.innerHTML = `
         <div class="chat-msg-header">
-          <strong>${msg.profiles?.full_name || 'Anónimo'}</strong>
-          <span class="chat-time">${new Date(msg.created_at).toLocaleDateString('es')}</span>
+          <strong>${msg.fullName || 'Anónimo'}</strong>
+          <span class="chat-time">${new Date(msg.createdAt).toLocaleDateString('es')}</span>
           ${(isOwner || isAdmin) ? `<button class="chat-delete" data-id="${msg.id}"><i class="ti ti-trash"></i></button>` : ''}
         </div>
         <p class="chat-content">${msg.content}</p>
         <div class="chat-actions">
-          <button class="chat-like ${liked ? 'liked' : ''}" data-id="${msg.id}">
-            <i class="ti ti-heart${liked ? '-filled' : ''}"></i> <span>${likesCount}</span>
+          <button class="chat-like ${msg.userLiked ? 'liked' : ''}" data-id="${msg.id}">
+            <i class="ti ti-heart${msg.userLiked ? '-filled' : ''}"></i> <span>${msg.likesCount}</span>
           </button>
           <button class="chat-reply-btn" data-id="${msg.id}">Responder</button>
         </div>
@@ -166,47 +133,40 @@ async function renderMessages(container) {
         try {
           await sendMessage(content, msg.id);
           replyInput.value = '';
-          await renderReplies(el.querySelector('.chat-replies'), msg.id);
+          await renderReplies(el.querySelector('.chat-replies'), msg.replies);
         } catch (err) { alert(err.message); }
       });
 
-      await renderReplies(el.querySelector('.chat-replies'), msg.id);
+      await renderReplies(el.querySelector('.chat-replies'), msg.replies);
     }
   } catch (err) {
     container.innerHTML = `<p class="error">Error: ${err.message}</p>`;
   }
 }
 
-async function renderReplies(container, parentId) {
+async function renderReplies(container, replies) {
   container.innerHTML = '';
-  try {
-    const replies = await loadReplies(parentId);
-    if (replies.length === 0) return;
+  if (!replies || replies.length === 0) return;
 
-    for (const reply of replies) {
-      const isOwner = currentUser?.id === reply.user_id;
-      const isAdmin = currentProfile?.role === 'admin';
-      const likesCount = reply.message_likes?.[0]?.count || 0;
-      const liked = await hasLiked(reply.id);
+  for (const reply of replies) {
+    const isOwner = currentUser?.id === reply.userId;
+    const isAdmin = currentProfile?.role === 'admin';
 
-      const el = document.createElement('div');
-      el.className = 'chat-reply';
-      el.innerHTML = `
-        <div class="chat-msg-header">
-          <strong>${reply.profiles?.full_name || 'Anónimo'}</strong>
-          <span class="chat-time">${new Date(reply.created_at).toLocaleDateString('es')}</span>
-          ${(isOwner || isAdmin) ? `<button class="chat-delete" data-id="${reply.id}"><i class="ti ti-trash"></i></button>` : ''}
-        </div>
-        <p class="chat-content">${reply.content}</p>
-        <div class="chat-actions">
-          <button class="chat-like ${liked ? 'liked' : ''}" data-id="${reply.id}">
-            <i class="ti ti-heart${liked ? '-filled' : ''}"></i> <span>${likesCount}</span>
-          </button>
-        </div>
-      `;
-      container.appendChild(el);
-    }
-  } catch (err) {
-    container.innerHTML = `<p class="error">Error: ${err.message}</p>`;
+    const el = document.createElement('div');
+    el.className = 'chat-reply';
+    el.innerHTML = `
+      <div class="chat-msg-header">
+        <strong>${reply.fullName || 'Anónimo'}</strong>
+        <span class="chat-time">${new Date(reply.createdAt).toLocaleDateString('es')}</span>
+        ${(isOwner || isAdmin) ? `<button class="chat-delete" data-id="${reply.id}"><i class="ti ti-trash"></i></button>` : ''}
+      </div>
+      <p class="chat-content">${reply.content}</p>
+      <div class="chat-actions">
+        <button class="chat-like ${reply.userLiked ? 'liked' : ''}" data-id="${reply.id}">
+          <i class="ti ti-heart${reply.userLiked ? '-filled' : ''}"></i> <span>${reply.likesCount}</span>
+        </button>
+      </div>
+    `;
+    container.appendChild(el);
   }
 }

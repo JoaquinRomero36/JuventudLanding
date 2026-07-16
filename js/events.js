@@ -1,73 +1,49 @@
 let eventsCache = null;
 
 async function loadEvents() {
-  const { data, error } = await sb
-    .from('events')
-    .select('*')
-    .order('date', { ascending: true });
-  if (error) throw error;
+  const data = await apiFetch('/events');
   eventsCache = data;
   return data;
 }
 
 async function createEvent(event) {
-  const { data, error } = await sb
-    .from('events')
-    .insert({ ...event, created_by: currentUser.id })
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
+  return apiFetch('/events', {
+    method: 'POST',
+    body: JSON.stringify({ ...event, created_by: currentUser.id })
+  });
 }
 
 async function updateEvent(id, updates) {
-  const { data, error } = await sb
-    .from('events')
-    .update(updates)
-    .eq('id', id)
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
+  return apiFetch('/events', {
+    method: 'PUT',
+    body: JSON.stringify({ id, ...updates })
+  });
 }
 
 async function deleteEvent(id) {
-  const { error } = await sb.from('events').delete().eq('id', id);
-  if (error) throw error;
+  return apiFetch(`/events?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
 }
 
 async function registerForEvent(eventId) {
-  const { error } = await sb
-    .from('registrations')
-    .insert({ event_id: eventId, user_id: currentUser.id });
-  if (error) throw error;
+  return apiFetch('/registrations', {
+    method: 'POST',
+    body: JSON.stringify({ eventId })
+  });
 }
 
 async function unregisterFromEvent(eventId) {
-  const { error } = await sb
-    .from('registrations')
-    .delete()
-    .eq('event_id', eventId)
-    .eq('user_id', currentUser.id);
-  if (error) throw error;
+  return apiFetch(`/registrations?eventId=${encodeURIComponent(eventId)}`, { method: 'DELETE' });
 }
 
 async function getUserRegistrations() {
-  const { data, error } = await sb
-    .from('registrations')
-    .select('event_id')
-    .eq('user_id', currentUser.id);
-  if (error) throw error;
-  return new Set(data.map(r => r.event_id));
+  const data = await apiFetch('/registrations');
+  return new Set(data);
 }
 
 async function getRegistrationCount(eventId) {
-  const { count, error } = await sb
-    .from('registrations')
-    .select('*', { count: 'exact', head: true })
-    .eq('event_id', eventId);
-  if (error) throw error;
-  return count;
+  const events = await loadEvents();
+  const ev = events.find(e => e.id === eventId);
+  return ev ? ev.registrationCount : 0;
 }
 
 function renderEventsSection(container) {
@@ -100,7 +76,7 @@ async function loadAndRenderEvents(list) {
 
     list.innerHTML = '';
     for (const event of events) {
-      const count = await getRegistrationCount(event.id);
+      const count = event.registrationCount || 0;
       const isRegistered = userRegs?.has(event.id);
       const isFull = event.max_participants > 0 && count >= event.max_participants;
 
