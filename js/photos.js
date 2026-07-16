@@ -1,26 +1,25 @@
-const CLOUD_NAME = 'TU_CLOUD_NAME';
-const UPLOAD_PRESET = 'juventud_unsigned';
-
 async function loadPhotos(approvedOnly = true) {
   const params = approvedOnly ? '?onlyApproved=true' : '';
   return apiFetch(`/photos${params}`);
 }
 
 async function uploadPhoto(file, description) {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', UPLOAD_PRESET);
-
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-    method: 'POST',
-    body: formData
-  });
-  const cloudData = await res.json();
-  if (!res.ok) throw new Error(cloudData.error?.message || 'Error al subir imagen');
-
-  return apiFetch('/photos', {
-    method: 'POST',
-    body: JSON.stringify({ url: cloudData.secure_url, description })
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const base64 = reader.result.split(',')[1];
+        const photo = await apiFetch('/photos', {
+          method: 'POST',
+          body: JSON.stringify({ file: base64, fileName: file.name, description })
+        });
+        resolve(photo);
+      } catch (err) {
+        reject(err);
+      }
+    };
+    reader.onerror = () => reject(new Error('Error al leer la imagen'));
+    reader.readAsDataURL(file);
   });
 }
 

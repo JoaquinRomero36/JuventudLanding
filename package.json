@@ -8,8 +8,7 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.0",
-    "@prisma/adapter-neon": "^6.0.0",
+    "@netlify/blobs": "^8.0.0",
     "@prisma/client": "^6.0.0"
   },
   "devDependencies": {

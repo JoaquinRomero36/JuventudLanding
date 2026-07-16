@@ -1,14 +1,10 @@
 const { PrismaClient } = require('@prisma/client');
-const { PrismaNeon } = require('@prisma/adapter-neon');
-const { neon } = require('@neondatabase/serverless');
 
 let prisma;
 
 function getDb() {
   if (!prisma) {
-    const sql = neon(process.env.DATABASE_URL);
-    const adapter = new PrismaNeon({ sql });
-    prisma = new PrismaClient({ adapter });
+    prisma = new PrismaClient();
   }
   return prisma;
 }
