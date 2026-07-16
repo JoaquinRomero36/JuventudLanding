@@ -1,61 +1,36 @@
-document.addEventListener('DOMContentLoaded', () => {
-
-  const WHATSAPP_NUMBER = '5493511234567';
-  const WHATSAPP_MESSAGE = 'Hola! Quiero saber más sobre Juventud CBA';
+document.addEventListener('DOMContentLoaded', async () => {
 
   const lockScreen = document.getElementById('lock-screen');
-  const siteContent = document.getElementById('site-content');
-  const loginBtn = document.getElementById('login-btn');
-  const logoutBtn = document.getElementById('logout-btn');
-  const userStatus = document.getElementById('user-status');
+  const authModal = document.getElementById('auth-modal');
+  const authModalContent = document.getElementById('auth-modal-content');
+  const showAuthBtn = document.getElementById('show-auth-btn');
 
-  function showSite(user) {
-    lockScreen.style.display = 'none';
-    siteContent.style.display = 'block';
-    userStatus.textContent = `Conectado como ${user.user_metadata.full_name || user.email}`;
+  showAuthBtn.addEventListener('click', () => {
+    authModal.style.display = 'flex';
+    renderAuthForm(authModalContent);
+  });
+
+  authModal.querySelector('.modal-backdrop').addEventListener('click', () => {
+    authModal.style.display = 'none';
+  });
+
+  authModal.addEventListener('click', (e) => {
+    if (e.target === authModal) {
+      authModal.style.display = 'none';
+    }
+  });
+
+  const session = await checkSession();
+  if (session) {
+    await renderApp();
   }
 
-  function showLock() {
-    lockScreen.style.display = 'flex';
-    siteContent.style.display = 'none';
-  }
-
-  if (window.netlifyIdentity) {
-    netlifyIdentity.init();
-
-    netlifyIdentity.on('init', user => {
-      if (user) {
-        showSite(user);
-      } else {
-        showLock();
-      }
-    });
-
-    netlifyIdentity.on('login', user => {
-      showSite(user);
-      netlifyIdentity.close();
-    });
-
-    netlifyIdentity.on('logout', () => {
-      showLock();
-    });
-
-    loginBtn.addEventListener('click', () => {
-      netlifyIdentity.open();
-    });
-
-    logoutBtn.addEventListener('click', () => {
-      netlifyIdentity.logout();
-    });
-  }
-
-  // --- Botón de WhatsApp ---
-  const btnWhatsapp = document.querySelector('.btn-whatsapp');
-  if (btnWhatsapp) {
-    btnWhatsapp.addEventListener('click', () => {
-      const encodedMsg = encodeURIComponent(WHATSAPP_MESSAGE);
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMsg}`, '_blank');
-    });
-  }
+  document.addEventListener('click', (e) => {
+    const whatsappBtn = e.target.closest('.btn-whatsapp');
+    if (whatsappBtn) {
+      const msg = encodeURIComponent('Hola! Quiero saber más sobre Juventud CBA');
+      window.open(`https://wa.me/5493511234567?text=${msg}`, '_blank');
+    }
+  });
 
 });

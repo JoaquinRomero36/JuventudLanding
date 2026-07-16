@@ -1,32 +1,50 @@
-/* --- Pantalla de login --- */
 .lock-screen {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f0efe9;
+  background: #0C354B;
   padding: 24px;
+  position: fixed; inset: 0; z-index: 300;
 }
 
 .lock-box {
   max-width: 380px;
   width: 100%;
-  background: #ffffff;
+  background: #FFFFFF;
   border-radius: 20px;
-  border: 0.5px solid #d3d1c7;
   padding: 40px 24px;
   text-align: center;
 }
 
 .hero-icon {
-  width: 48px; height: 48px;
-  border-radius: 12px;
-  background: #e6f1fb;
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  background: rgba(12,53,75,0.1);
   display: flex; align-items: center; justify-content: center;
   margin: 0 auto 16px;
 }
 
-.hero-icon i { font-size: 24px; color: #0c447c; }
+.hero-icon i { font-size: 28px; color: #0C354B; }
 
-.lock-box h1 { margin-bottom: 8px; }
-.lock-box p { font-size: 14px; color: #5f5e5a; margin-bottom: 24px; }
+.lock-box h1 {
+  font-family: 'League Spartan', sans-serif;
+  font-size: 26px; font-weight: 700;
+  color: #0C354B; margin-bottom: 8px;
+}
+.lock-box p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; color: #6B6B66; margin-bottom: 24px; line-height: 1.6;
+}
+
+@media (max-width: 359px) {
+  .lock-screen { padding: 16px; }
+  .lock-box { padding: 28px 16px; }
+}
+@media (min-width: 480px) {
+  .lock-box { max-width: 420px; padding: 48px 32px; }
+  .lock-box h1 { font-size: 30px; }
+}
+@media (min-width: 768px) {
+  .lock-box { max-width: 440px; padding: 56px 40px; }
+}
