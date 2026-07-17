@@ -83,7 +83,7 @@ async function loadAndRenderEvents(list) {
       const card = document.createElement('div');
       card.className = 'event-card';
       card.innerHTML = `
-        <div class="event-date-badge">
+        <div class="event-date">
           <span class="event-day">${new Date(event.date).getDate()}</span>
           <span class="event-month">${new Date(event.date).toLocaleString('es', { month: 'short' })}</span>
         </div>

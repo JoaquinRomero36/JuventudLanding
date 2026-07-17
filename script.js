@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   function showGallery() {
-    mainContent.innerHTML = '<h1 class="page-title">Galería de fotos</h1><div id="full-gallery"></div>';
+    mainContent.innerHTML = '<div class="wrap"><div class="card" style="padding:24px;"><h2 style="font-size:18px;font-weight:500;margin-bottom:16px;">Galería de fotos</h2><div id="full-gallery"></div></div></div>';
     const gc = document.getElementById('full-gallery');
     loadPhotos(true).then(photos => renderPhotoGallery(gc, photos)).catch(err => {
       gc.innerHTML = `<p class="error">Error: ${err.message}</p>`;

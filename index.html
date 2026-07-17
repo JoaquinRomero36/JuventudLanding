@@ -5,11 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Juventud CBA</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=League+Spartan:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -24,107 +21,106 @@
 </nav>
 
 <main id="main-content">
-  <div class="landing-hero">
-    <div class="hero-content">
-      <div class="hero-icon"><i class="ti ti-flame"></i></div>
-      <h1>Juventud CBA</h1>
-      <p>Un grupo de jóvenes adventistas en Córdoba que se junta para crecer en fe, en comunidad y en propósito.</p>
+  <div class="wrap">
+    <div class="card">
+
+      <div class="hero">
+        <div class="icon-box"><i class="ti ti-flame"></i></div>
+        <h1>Juventud CBA</h1>
+        <p>Un grupo de jóvenes adventistas en Córdoba que se junta para crecer en fe, en comunidad y en propósito.</p>
+      </div>
+
+      <div class="section">
+        <h2>Quiénes somos</h2>
+        <p class="desc">Empezamos hace un año con un objetivo simple: que los jóvenes de Córdoba tengan un lugar donde conectar con Dios y entre ellos. Hoy somos un grupo que crece cada sábado.</p>
+      </div>
+
+      <div class="section">
+        <h2>Actividades</h2>
+        <div class="activity">
+          <div class="icon-box" style="background:#e6f1fb;"><i class="ti ti-music" style="color:#0c447c;"></i></div>
+          <div>
+            <p class="title">Worship</p>
+            <p class="text">Música en vivo para conectar de verdad, sin apuro.</p>
+          </div>
+        </div>
+        <div class="activity">
+          <div class="icon-box" style="background:#eaf3de;"><i class="ti ti-message" style="color:#27500a;"></i></div>
+          <div>
+            <p class="title">Palabra</p>
+            <p class="text">Un mensaje pensado para lo que se vive a los 15, a los 25 o a los 35.</p>
+          </div>
+        </div>
+        <div class="activity">
+          <div class="icon-box" style="background:#fdefd4;"><i class="ti ti-users" style="color:#a3620a;"></i></div>
+          <div>
+            <p class="title">Comunidad</p>
+            <p class="text">After para quedarse charlando, y campamentos varias veces al año.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Lo que dicen</h2>
+        <div class="testimonials">
+          <div class="testimonial">
+            <p class="quote">"Acá encontré amigos de verdad, no solo caras conocidas."</p>
+            <p class="author">— Sofía, 19</p>
+          </div>
+          <div class="testimonial">
+            <p class="quote">"Es el mejor momento de mi semana, sin dudarlo."</p>
+            <p class="author">— Nico, 23</p>
+          </div>
+          <div class="testimonial">
+            <p class="quote">"Nunca sentí que tuviera que fingir nada acá."</p>
+            <p class="author">— Male, 27</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" id="events-section">
+        <div id="events-container"></div>
+      </div>
+
+      <div class="section" id="testimonials-section">
+        <div id="chat-container"></div>
+      </div>
+
+      <div class="section" id="photos-section">
+        <div class="section-header">
+          <h2>Galería</h2>
+          <a href="#" class="section-link" id="gallery-link">Ver todas</a>
+        </div>
+        <div id="home-gallery"></div>
+      </div>
+
+      <div class="section" id="faq-section">
+        <h2>Preguntas frecuentes</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question">¿Tengo que ser adventista para ir? <span class="faq-icon">+</span></button>
+            <p class="faq-answer">No. Cualquiera de 15 a 35 es bienvenido, vengas de la fe que vengas.</p>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">¿Qué pasa si voy solo, sin conocer a nadie? <span class="faq-icon">+</span></button>
+            <p class="faq-answer">La mayoría llega así. El after de los sábados existe justamente para eso.</p>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">¿Los campamentos tienen costo? <span class="faq-icon">+</span></button>
+            <p class="faq-answer">Sí, cubre comida y estadía. Siempre avisamos el monto con anticipación.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta">
+        <h2>¿Tenés 15 a 35 años?</h2>
+        <p>No hace falta nada más que las ganas de venir.</p>
+        <button class="btn-whatsapp"><i class="ti ti-brand-whatsapp"></i> Escribinos por WhatsApp</button>
+      </div>
+
     </div>
+    <p class="footer-note">© 2026 Juventud CBA</p>
   </div>
-
-  <section class="section" id="about-section">
-    <h2>Quiénes somos</h2>
-    <p class="desc">Empezamos hace un año con un objetivo simple: que los jóvenes de Córdoba tengan un lugar donde conectar con Dios y entre ellos. Hoy somos un grupo que crece cada sábado.</p>
-  </section>
-
-  <section class="section activities-section">
-    <h2>Actividades</h2>
-    <div class="activities">
-      <div class="activity-card">
-        <div class="activity-icon" style="background:#e6f1fb;"><i class="ti ti-music" style="color:#0c447c;"></i></div>
-        <div>
-          <p class="activity-title">Worship</p>
-          <p class="activity-desc">Música en vivo para conectar de verdad, sin apuro.</p>
-        </div>
-      </div>
-      <div class="activity-card">
-        <div class="activity-icon" style="background:#eaf3de;"><i class="ti ti-message" style="color:#27500a;"></i></div>
-        <div>
-          <p class="activity-title">Palabra</p>
-          <p class="activity-desc">Un mensaje pensado para lo que se vive a los 15, a los 25 o a los 35.</p>
-        </div>
-      </div>
-      <div class="activity-card">
-        <div class="activity-icon" style="background:#fdefd4;"><i class="ti ti-users" style="color:#a3620a;"></i></div>
-        <div>
-          <p class="activity-title">Comunidad</p>
-          <p class="activity-desc">After para quedarse charlando, y campamentos varias veces al año.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section testimonials-section">
-    <h2>Lo que dicen</h2>
-    <div class="testimonials-scroll">
-      <div class="testimonial-card">
-        <p class="testimonial-quote">"Acá encontré amigos de verdad, no solo caras conocidas."</p>
-        <p class="testimonial-author">— Sofía, 19</p>
-      </div>
-      <div class="testimonial-card">
-        <p class="testimonial-quote">"Es el mejor momento de mi semana, sin dudarlo."</p>
-        <p class="testimonial-author">— Nico, 23</p>
-      </div>
-      <div class="testimonial-card">
-        <p class="testimonial-quote">"Nunca sentí que tuviera que fingir nada acá."</p>
-        <p class="testimonial-author">— Male, 27</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="events-section">
-    <div id="events-container"></div>
-  </section>
-
-  <section class="section" id="testimonials-section">
-    <div id="chat-container"></div>
-  </section>
-
-  <section class="section" id="photos-section">
-    <div class="section-header">
-      <h2>Galería</h2>
-      <a href="#" class="section-link" id="gallery-link">Ver todas</a>
-    </div>
-    <div id="home-gallery"></div>
-  </section>
-
-  <section class="section" id="faq-section">
-    <h2>Preguntas frecuentes</h2>
-    <div class="faq-list">
-      <div class="faq-item">
-        <button class="faq-question">¿Tengo que ser adventista para ir? <span class="faq-icon">+</span></button>
-        <p class="faq-answer">No. Cualquiera de 15 a 35 es bienvenido, vengas de la fe que vengas.</p>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question">¿Qué pasa si voy solo, sin conocer a nadie? <span class="faq-icon">+</span></button>
-        <p class="faq-answer">La mayoría llega así. El after de los sábados existe justamente para eso.</p>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question">¿Los campamentos tienen costo? <span class="faq-icon">+</span></button>
-        <p class="faq-answer">Sí, cubre comida y estadía. Siempre avisamos el monto con anticipación.</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="cta">
-    <h2>¿Tenés 15 a 35 años?</h2>
-    <p>No hace falta nada más que las ganas de venir.</p>
-    <button class="btn-whatsapp"><i class="ti ti-brand-whatsapp"></i> Escribinos por WhatsApp</button>
-  </section>
-
-  <footer class="footer">
-    <p>&copy; 2026 Juventud CBA</p>
-  </footer>
 </main>
 
 <div id="auth-modal" class="modal" style="display:none;">
