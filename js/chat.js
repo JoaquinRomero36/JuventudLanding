@@ -1,5 +1,10 @@
 async function loadMessages() {
-  return apiFetch('/messages');
+  try {
+    return await apiFetch('/messages');
+  } catch (err) {
+    if (err.message === 'No autorizado') return [];
+    throw err;
+  }
 }
 
 async function loadReplies(parentId) {
