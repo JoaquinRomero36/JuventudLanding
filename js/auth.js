@@ -90,20 +90,27 @@ async function signUp(email, password, fullName) {
   return data;
 }
 
+function parseJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch { return {}; }
+}
+
 async function signIn(email, password) {
   const data = await netlifyFetch('/token?grant_type=password', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: `grant_type=password&username=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
   });
+  const payload = parseJwt(data.access_token);
   const session = {
-    id: data.user.id,
-    email: data.user.email,
+    id: payload.sub,
+    email: payload.email,
     token: { access_token: data.access_token, refresh_token: data.refresh_token, expires_in: data.expires_in }
   };
   localStorage.setItem('gotrue.user', JSON.stringify(session));
   cachedToken = data.access_token;
-  currentUser = { id: data.user.id, email: data.user.email };
+  currentUser = { id: payload.sub, email: payload.email };
   await loadProfile();
   return data;
 }
@@ -160,16 +167,7 @@ function renderAuthForm(container) {
 
       if (isRegister) {
         const name = container.querySelector('#auth-name').value;
-        const result = await signUp(email, password, name);
-        if (result?.id) {
-          const user = JSON.parse(localStorage.getItem('gotrue.user') || '{}');
-          if (!user.id) {
-            errorEl.textContent = 'Revisá tu email para confirmar la cuenta (si hace falta).';
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Crear cuenta';
-            return;
-          }
-        }
+        await signUp(email, password, name);
         await signIn(email, password);
         closeModal();
         await renderApp();
