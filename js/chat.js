@@ -44,15 +44,12 @@ async function hasLiked(messageId) {
 
 function renderChatSection(container) {
   container.innerHTML = `
-    <div class="section-header">
-      <h2>Testimonios</h2>
-    </div>
     ${currentUser ? `
     <div class="chat-input-area">
       <textarea id="chat-input" class="input" placeholder="Dejá tu testimonio..." rows="2"></textarea>
       <button id="chat-send" class="btn-primary">Enviar</button>
     </div>` : `
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Iniciá sesión para dejar tu testimonio.</p>`}
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">Iniciá sesión para dejar tu testimonio.</p>`}
     <div id="chat-messages" class="chat-messages"></div>
   `;
 

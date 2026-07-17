@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="styles2.css">
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
 
@@ -26,6 +26,7 @@
     </div>
   </nav>
 
+  <!-- Hero -->
   <header class="hero">
     <img src="logo-jvtd.png" alt="Juventud CBA" class="hero-logo">
     <span class="eyebrow">Córdoba Capital · 15 a 35 años</span>
@@ -34,10 +35,12 @@
     <a href="#whatsapp-cta" class="btn-primary btn-hero">Quiero sumarme</a>
   </header>
 
+  <!-- Qué es -->
   <section class="section" id="sobre">
     <span class="eyebrow">Qué es</span>
     <h2>Un espacio pensado para vos.</h2>
     <p class="section-lead">Empezamos hace un año con una idea simple: que los jóvenes de Córdoba tengan un lugar real donde crecer en fe y en amistad, sin caretas.</p>
+
     <div class="pillars">
       <div class="pillar">
         <span class="pillar-mark">W</span>
@@ -57,44 +60,42 @@
     </div>
   </section>
 
+  <!-- Testimonios -->
   <section class="section section-alt">
     <span class="eyebrow">Opiniones</span>
     <h2>Lo que dicen los que ya vinieron.</h2>
     <div class="testimonials">
-      <blockquote>Acá encontré amigos de verdad, no solo caras conocidas. — Sofía, 19</blockquote>
-      <blockquote>Es el mejor momento de mi semana, sin dudarlo. — Nico, 23</blockquote>
-      <blockquote>Nunca sentí que tuviera que fingir nada acá. — Male, 27</blockquote>
+      <blockquote>Acá encontré amigos de verdad, no solo caras conocidas.— Sofía, 19</blockquote>
+      <blockquote>Es el mejor momento de mi semana, sin dudarlo.— Nico, 23</blockquote>
+      <blockquote>Nunca sentí que tuviera que fingir nada acá.— Male, 27</blockquote>
     </div>
   </section>
 
-  <section class="section" id="events-section">
-    <span class="eyebrow">Eventos</span>
-    <h2>Próximos encuentros.</h2>
-    <div id="events-container"></div>
-  </section>
-
-  <section class="section section-alt" id="testimonials-section">
-    <span class="eyebrow">Testimonios</span>
-    <h2>Lo que dicen los que vienen.</h2>
-    <div id="chat-container"></div>
-  </section>
-
+  <!-- Galería + subir foto -->
   <section class="section" id="galeria">
     <span class="eyebrow">Galería</span>
     <h2>Momentos del último encuentro.</h2>
-    <div id="home-gallery" class="gallery"></div>
+    <div class="gallery">
+      <div class="gallery-placeholder"><i class="ti ti-photo"></i></div>
+      <div class="gallery-placeholder"><i class="ti ti-photo"></i></div>
+      <div class="gallery-placeholder"><i class="ti ti-photo"></i></div>
+    </div>
+
     <div class="upload-box">
       <h3>¿Tenés fotos del último sábado o campamento?</h3>
       <p>Subilas acá — las revisamos y las sumamos a la galería.</p>
-      <div id="photo-upload-area">
-        <input type="text" id="photo-name" placeholder="Tu nombre" class="upload-input">
-        <input type="file" id="photo-file" accept="image/*" class="upload-input">
-        <button id="photo-upload-btn" class="btn-primary">Subir foto</button>
-      </div>
+
+      <form name="fotos" method="POST" data-netlify="true" enctype="multipart/form-data" id="photo-form">
+        <input type="hidden" name="form-name" value="fotos">
+        <input type="text" name="nombre" placeholder="Tu nombre" required>
+        <input type="file" name="foto" accept="image/*" required>
+        <button type="submit" class="btn-primary">Subir foto</button>
+      </form>
       <p id="upload-status" class="upload-status"></p>
     </div>
   </section>
 
+  <!-- FAQ -->
   <section class="section section-alt" id="faqs">
     <span class="eyebrow">Preguntas frecuentes</span>
     <h2>¿Tenés dudas?</h2>
@@ -114,6 +115,7 @@
     </div>
   </section>
 
+  <!-- Footer -->
   <footer class="footer" id="whatsapp-cta">
     <h2>¿Tenés 15 a 35 años?</h2>
     <p>No hace falta nada más que las ganas de venir.</p>
@@ -123,17 +125,12 @@
 
 </div>
 
-<div id="auth-modal" class="modal" style="display:none;">
-  <div class="modal-backdrop"></div>
-  <div class="modal-content" id="auth-modal-content"></div>
-</div>
+<!-- Formulario oculto para que Netlify lo detecte al construir el sitio -->
+<form name="fotos" data-netlify="true" enctype="multipart/form-data" hidden>
+  <input type="text" name="nombre">
+  <input type="file" name="foto">
+</form>
 
-<script src="js/auth.js"></script>
-<script src="js/events.js"></script>
-<script src="js/photos.js"></script>
-<script src="js/chat.js"></script>
-<script src="js/admin.js"></script>
-<script src="js/app.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

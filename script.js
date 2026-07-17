@@ -1,86 +1,108 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
+  const WHATSAPP_NUMBER = '5493511234567';
+  const WHATSAPP_MESSAGE = 'Hola! Quiero saber más sobre Juventud CBA';
+
+  // --- Auth ---
+  const authArea = document.getElementById('auth-area');
   const authModal = document.getElementById('auth-modal');
   const authModalContent = document.getElementById('auth-modal-content');
-  const loginBtn = document.getElementById('login-header-btn');
-  const logoutBtn = document.getElementById('logout-header-btn');
-  const mainContent = document.getElementById('main-content');
-  const navLinks = document.querySelectorAll('[data-section]');
-  const galleryLink = document.getElementById('gallery-link');
 
-  function showAuth() {
-    authModal.style.display = 'flex';
-    renderAuthForm(authModalContent);
+  function renderLoggedIn(user) {
+    const name = currentProfile?.fullName || user?.email || 'Usuario';
+    authArea.innerHTML = `
+      <span class="nav-user">${name}</span>
+      <button id="logout-btn" class="nav-logout">Cerrar sesión</button>
+    `;
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await signOut();
+      location.reload();
+    });
   }
 
-  function updateNav() {
-    if (currentUser) {
-      loginBtn.style.display = 'none';
-      logoutBtn.style.display = 'inline-block';
-      logoutBtn.textContent = 'Salir (' + (currentProfile?.fullName || currentUser.email) + ')';
-    } else {
-      loginBtn.style.display = 'inline-block';
-      logoutBtn.style.display = 'none';
-    }
+  function renderLoggedOut() {
+    authArea.innerHTML = `<button id="login-btn" class="nav-login">Iniciar sesión</button>`;
+    document.getElementById('login-btn').addEventListener('click', () => {
+      authModal.style.display = 'flex';
+      renderAuthForm(authModalContent);
+    });
   }
-
-  loginBtn.addEventListener('click', showAuth);
-  logoutBtn.addEventListener('click', async () => {
-    await signOut();
-    updateNav();
-    location.reload();
-  });
 
   authModal.querySelector('.modal-backdrop').addEventListener('click', () => {
     authModal.style.display = 'none';
   });
-  authModal.addEventListener('click', (e) => {
-    if (e.target === authModal) authModal.style.display = 'none';
-  });
 
+  await checkSession();
+  if (currentUser) {
+    renderLoggedIn();
+  } else {
+    renderLoggedOut();
+  }
+
+  // --- WhatsApp ---
   document.addEventListener('click', (e) => {
-    const whatsappBtn = e.target.closest('.btn-whatsapp');
-    if (whatsappBtn) {
-      const msg = encodeURIComponent('Hola! Quiero saber más sobre Juventud CBA');
-      window.open(`https://wa.me/5493511234567?text=${msg}`, '_blank');
+    const btn = e.target.closest('.btn-whatsapp');
+    if (btn) {
+      const msg = encodeURIComponent(WHATSAPP_MESSAGE);
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
     }
   });
 
+  // --- FAQ accordion ---
   document.querySelectorAll('.faq-question').forEach(btn => {
     btn.addEventListener('click', () => {
-      const item = btn.closest('.faq-item');
-      item.classList.toggle('open');
-      btn.querySelector('.faq-icon').textContent = item.classList.contains('open') ? '−' : '+';
+      const answer = btn.nextElementSibling;
+      const isOpen = btn.classList.contains('open');
+      document.querySelectorAll('.faq-question').forEach(b => {
+        b.classList.remove('open');
+        b.nextElementSibling.style.maxHeight = null;
+      });
+      if (!isOpen) {
+        btn.classList.add('open');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+      }
     });
   });
 
-  navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      navLinks.forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
-      const section = link.dataset.section;
-      if (section === 'galeria') showGallery();
-      else if (section === 'inicio') location.reload();
-    });
-  });
+  // --- Photo upload (Netlify Blobs) ---
+  const uploadBtn = document.getElementById('photo-upload-btn');
+  const nameInput = document.getElementById('photo-name');
+  const fileInput = document.getElementById('photo-file');
+  const uploadStatus = document.getElementById('upload-status');
 
-  galleryLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    showGallery();
-  });
-
-  function showGallery() {
-    mainContent.innerHTML = '<div class="wrap"><div class="card" style="padding:24px;"><h2 style="font-size:18px;font-weight:500;margin-bottom:16px;">Galería de fotos</h2><div id="full-gallery"></div></div></div>';
-    const gc = document.getElementById('full-gallery');
-    loadPhotos(true).then(photos => renderPhotoGallery(gc, photos)).catch(err => {
-      gc.innerHTML = `<p class="error">Error: ${err.message}</p>`;
+  if (uploadBtn) {
+    uploadBtn.addEventListener('click', async () => {
+      const file = fileInput.files[0];
+      if (!file) { uploadStatus.textContent = 'Seleccioná una foto.'; return; }
+      try {
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = 'Subiendo...';
+        await uploadPhoto(file, nameInput.value || 'Foto');
+        uploadStatus.textContent = '¡Foto subida! Gracias por compartirla.';
+        nameInput.value = '';
+        fileInput.value = '';
+      } catch (err) {
+        uploadStatus.textContent = 'Error: ' + err.message;
+      } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = 'Subir foto';
+      }
     });
   }
 
-  await checkSession();
-  updateNav();
-
-  renderEventsSection(document.getElementById('events-container'));
-  renderHomeGallery(document.getElementById('home-gallery'));
+  // --- Render sections ---
+  const eventsContainer = document.getElementById('events-container');
+  eventsContainer.innerHTML = '<div id="events-list" class="events-list"></div>';
+  loadAndRenderEvents(eventsContainer.querySelector('#events-list'));
   renderChatSection(document.getElementById('chat-container'));
+
+  const homeGallery = document.getElementById('home-gallery');
+  renderHomeGallery(homeGallery);
+
+  // --- Gallery link (scroll) ---
+  document.querySelector('a[href="#galeria"]')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('galeria').scrollIntoView({ behavior: 'smooth' });
+  });
+
 });

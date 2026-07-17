@@ -1,0 +1,32 @@
+/* --- Pantalla de login --- */
+.lock-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0efe9;
+  padding: 24px;
+}
+
+.lock-box {
+  max-width: 380px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 0.5px solid #d3d1c7;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.hero-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: #e6f1fb;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.hero-icon i { font-size: 24px; color: #0c447c; }
+
+.lock-box h1 { margin-bottom: 8px; }
+.lock-box p { font-size: 14px; color: #5f5e5a; margin-bottom: 24px; }
