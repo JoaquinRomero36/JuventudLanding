@@ -13,23 +13,79 @@
 </head>
 <body>
 
-<div id="lock-screen" class="lock-screen">
-  <div class="lock-box">
-    <div class="hero-icon"><i class="ti ti-flame"></i></div>
-    <h1>Juventud CBA</h1>
-    <p>Bienvenido al grupo de jóvenes de Córdoba.</p>
-    <button id="show-auth-btn" class="btn-primary">Iniciar sesión / Registrarme</button>
+<nav class="nav" id="main-nav">
+  <div class="nav-brand">Juventud CBA</div>
+  <div class="nav-links">
+    <button class="nav-link active" data-section="inicio">Inicio</button>
+    <button class="nav-link" data-section="galeria">Galería</button>
+    <button id="login-header-btn" class="nav-link nav-login">Iniciar sesión</button>
+    <button id="logout-header-btn" class="nav-link nav-logout" style="display:none;">Salir</button>
   </div>
-</div>
+</nav>
+
+<main id="main-content">
+  <div class="landing-hero">
+    <div class="hero-content">
+      <div class="hero-icon"><i class="ti ti-flame"></i></div>
+      <h1>Juventud CBA</h1>
+      <p>Un grupo de jóvenes adventistas en Córdoba que se junta para crecer en fe, en comunidad y en propósito.</p>
+    </div>
+  </div>
+
+  <section class="section" id="about-section">
+    <h2>Quiénes somos</h2>
+    <p class="desc">Empezamos hace un año con un objetivo simple: que los jóvenes de Córdoba tengan un lugar donde conectar con Dios y entre ellos. Hoy somos un grupo que crece cada sábado.</p>
+  </section>
+
+  <section class="section" id="events-section">
+    <div id="events-container"></div>
+  </section>
+
+  <section class="section" id="testimonials-section">
+    <div id="chat-container"></div>
+  </section>
+
+  <section class="section" id="photos-section">
+    <div class="section-header">
+      <h2>Galería</h2>
+      <a href="#" class="section-link" id="gallery-link">Ver todas</a>
+    </div>
+    <div id="home-gallery"></div>
+  </section>
+
+  <section class="section" id="faq-section">
+    <h2>Preguntas frecuentes</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question">¿Tengo que ser adventista para ir? <span class="faq-icon">+</span></button>
+        <p class="faq-answer">No. Cualquiera de 15 a 35 es bienvenido, vengas de la fe que vengas.</p>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">¿Qué pasa si voy solo, sin conocer a nadie? <span class="faq-icon">+</span></button>
+        <p class="faq-answer">La mayoría llega así. El after de los sábados existe justamente para eso.</p>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question">¿Los campamentos tienen costo? <span class="faq-icon">+</span></button>
+        <p class="faq-answer">Sí, cubre comida y estadía. Siempre avisamos el monto con anticipación.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>¿Tenés 15 a 35 años?</h2>
+    <p>No hace falta nada más que las ganas de venir.</p>
+    <button class="btn-whatsapp"><i class="ti ti-brand-whatsapp"></i> Escribinos por WhatsApp</button>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2026 Juventud CBA</p>
+  </footer>
+</main>
 
 <div id="auth-modal" class="modal" style="display:none;">
   <div class="modal-backdrop"></div>
   <div class="modal-content" id="auth-modal-content"></div>
 </div>
-
-<nav id="main-nav" class="nav" style="display:none;"></nav>
-
-<main id="main-content"></main>
 
 <script src="https://cdn.jsdelivr.net/npm/netlify-identity-widget@1/build/netlify-identity.js"></script>
 <script src="js/auth.js"></script>

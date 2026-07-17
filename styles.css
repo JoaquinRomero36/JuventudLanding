@@ -49,7 +49,6 @@ body {
 }
 .nav-link:hover { background: rgba(255,255,255,0.15); color: #fff; }
 .nav-link.active { background: rgba(255,255,255,0.2); color: #fff; }
-.nav-logout { color: rgba(255,255,255,0.6); }
 
 /* ========== LOCK SCREEN ========== (in style.css) */
 

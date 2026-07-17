@@ -170,13 +170,13 @@ function renderAuthForm(container) {
         await signUp(email, password, name);
         await signIn(email, password);
         closeModal();
-        await renderApp();
+        location.reload();
         return;
       }
 
       await signIn(email, password);
       closeModal();
-      await renderApp();
+      location.reload();
     } catch (err) {
       errorEl.textContent = err.message;
       submitBtn.disabled = false;
