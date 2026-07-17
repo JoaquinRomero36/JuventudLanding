@@ -4,7 +4,8 @@ let prisma;
 
 function getDb() {
   if (!prisma) {
-    const url = process.env.NETLIFY_DB_URL || process.env.DATABASE_URL;
+    const url = process.env.DATABASE_URL || process.env.NETLIFY_DB_URL;
+    if (!url) throw new Error('DATABASE_URL no está configurada');
     prisma = new PrismaClient({ datasources: { db: { url } } });
   }
   return prisma;

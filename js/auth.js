@@ -1,24 +1,48 @@
 let currentUser = null;
 let currentProfile = null;
-let gotrue = null;
 
-async function initAuth() {
-  if (typeof netlifyIdentity !== 'undefined') {
-    gotrue = netlifyIdentity.gotrue;
+function identityUrl() {
+  const base = window.location.origin;
+  return base + '/.netlify/identity';
+}
+
+async function netlifyFetch(path, opts = {}) {
+  const res = await fetch(identityUrl() + path, {
+    ...opts,
+    headers: { 'Content-Type': 'application/json', ...opts.headers }
+  });
+  const json = await res.json();
+  if (json.error || json.msg) throw new Error(json.msg || json.error_description || json.error);
+  return json;
+}
+
+let cachedToken = null;
+
+async function ensureToken() {
+  if (cachedToken) {
+    try {
+      const r = await netlifyFetch('/user', { headers: { Authorization: `Bearer ${cachedToken}` } });
+      if (r.id) return cachedToken;
+    } catch {}
+    cachedToken = null;
   }
+  const ref = localStorage.getItem('gotrue.user');
+  if (!ref) return null;
+  try {
+    const u = JSON.parse(ref);
+    if (u.token?.access_token) {
+      const r = await netlifyFetch('/user', { headers: { Authorization: `Bearer ${u.token.access_token}` } });
+      if (r.id) {
+        cachedToken = u.token.access_token;
+        return cachedToken;
+      }
+    }
+  } catch {}
+  return null;
 }
 
 async function getToken() {
-  if (!gotrue) return null;
-  const user = gotrue.currentUser();
-  if (!user) return null;
-  try {
-    const token = await user.jwt();
-    return token;
-  } catch {
-    const u = gotrue.currentUser();
-    return u?.token?.access_token || null;
-  }
+  return ensureToken();
 }
 
 async function apiFetch(path, options = {}) {
@@ -32,14 +56,18 @@ async function apiFetch(path, options = {}) {
 }
 
 async function checkSession() {
-  if (!gotrue) return null;
-  const user = gotrue.currentUser();
-  if (user) {
-    currentUser = { id: user.id, email: user.email };
+  const token = await ensureToken();
+  if (!token) return null;
+  const ref = localStorage.getItem('gotrue.user');
+  if (!ref) return null;
+  try {
+    const u = JSON.parse(ref);
+    currentUser = { id: u.id, email: u.email };
     await loadProfile();
     return currentUser;
+  } catch {
+    return null;
   }
-  return null;
 }
 
 async function loadProfile() {
@@ -55,21 +83,34 @@ async function loadProfile() {
 }
 
 async function signUp(email, password, fullName) {
-  const { data, error } = await gotrue.signup(email, password, { full_name: fullName });
-  if (error) throw error;
+  const data = await netlifyFetch('/signup', {
+    method: 'POST',
+    body: JSON.stringify({ email, password, data: { full_name: fullName } })
+  });
   return data;
 }
 
 async function signIn(email, password) {
-  const { data, error } = await gotrue.login(email, password, true);
-  if (error) throw error;
-  currentUser = { id: data.id, email: data.email };
+  const data = await netlifyFetch('/token?grant_type=password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `grant_type=password&username=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+  });
+  const session = {
+    id: data.user.id,
+    email: data.user.email,
+    token: { access_token: data.access_token, refresh_token: data.refresh_token, expires_in: data.expires_in }
+  };
+  localStorage.setItem('gotrue.user', JSON.stringify(session));
+  cachedToken = data.access_token;
+  currentUser = { id: data.user.id, email: data.user.email };
   await loadProfile();
   return data;
 }
 
 async function signOut() {
-  await gotrue.logout();
+  localStorage.removeItem('gotrue.user');
+  cachedToken = null;
   currentUser = null;
   currentProfile = null;
 }
@@ -120,12 +161,14 @@ function renderAuthForm(container) {
       if (isRegister) {
         const name = container.querySelector('#auth-name').value;
         const result = await signUp(email, password, name);
-        if (result?.user?.identities?.length === 0) {
-          errorEl.textContent = 'Este email ya está registrado. Iniciá sesión.';
-          errorEl.style.color = '#B7502B';
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Crear cuenta';
-          return;
+        if (result?.id) {
+          const user = JSON.parse(localStorage.getItem('gotrue.user') || '{}');
+          if (!user.id) {
+            errorEl.textContent = 'Revisá tu email para confirmar la cuenta (si hace falta).';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Crear cuenta';
+            return;
+          }
         }
         await signIn(email, password);
         closeModal();

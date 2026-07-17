@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
 
-  await initAuth();
-
   const lockScreen = document.getElementById('lock-screen');
   const authModal = document.getElementById('auth-modal');
   const authModalContent = document.getElementById('auth-modal-content');
