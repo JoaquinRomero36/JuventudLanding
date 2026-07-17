@@ -42,10 +42,12 @@ function renderChatSection(container) {
     <div class="section-header">
       <h2>Testimonios</h2>
     </div>
+    ${currentUser ? `
     <div class="chat-input-area">
       <textarea id="chat-input" class="input" placeholder="Dejá tu testimonio..." rows="2"></textarea>
       <button id="chat-send" class="btn-primary">Enviar</button>
-    </div>
+    </div>` : `
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Iniciá sesión para dejar tu testimonio.</p>`}
     <div id="chat-messages" class="chat-messages"></div>
   `;
 
@@ -53,17 +55,19 @@ function renderChatSection(container) {
   const input = container.querySelector('#chat-input');
   const messagesContainer = container.querySelector('#chat-messages');
 
-  sendBtn.addEventListener('click', async () => {
-    const content = input.value.trim();
-    if (!content) return;
-    try {
-      await sendMessage(content);
-      input.value = '';
-      await renderMessages(messagesContainer);
-    } catch (err) {
-      alert(err.message);
-    }
-  });
+  if (sendBtn) {
+    sendBtn.addEventListener('click', async () => {
+      const content = input.value.trim();
+      if (!content) return;
+      try {
+        await sendMessage(content);
+        input.value = '';
+        await renderMessages(messagesContainer);
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+  }
 
   renderMessages(messagesContainer);
 }
