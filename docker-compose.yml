@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: juventud
+      POSTGRES_PASSWORD: juventud123
+      POSTGRES_DB: juventud_cba
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://juventud:juventud123@db:5432/juventud_cba?schema=public"
+      JWT_SECRET: "dev-secret-juventud-cba-2026"
+    depends_on:
+      - db
+    volumes:
+      - uploads:/app/src/uploads
+
+volumes:
+  pgdata:
+  uploads:
