@@ -25,6 +25,14 @@ async function toggleLike(messageId) {
   });
 }
 
+function formatChatDate(iso) {
+  try {
+    return new Date(iso).toLocaleDateString('es', { day: 'numeric', month: 'long' });
+  } catch {
+    return '';
+  }
+}
+
 function renderChatSection(container) {
   container.innerHTML = `
     ${currentUser ? `
@@ -32,7 +40,7 @@ function renderChatSection(container) {
       <textarea id="chat-input" placeholder="Dejá tu testimonio..." rows="2"></textarea>
       <button id="chat-send" class="btn-primary">Enviar</button>
     </div>` : `
-    <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">Iniciá sesión para dejar tu testimonio.</p>`}
+    <p class="chat-login-hint">Iniciá sesión para dejar tu testimonio.</p>`}
     <div id="chat-messages" class="chat-messages"></div>
   `;
 
@@ -48,7 +56,8 @@ function renderChatSection(container) {
         await sendMessage(content);
         input.value = '';
         await renderMessages(messagesContainer);
-      } catch (err) { alert(err.message); }
+        showToast('Testimonio publicado', 'success');
+      } catch (err) { showToast(apiErrorMessage(err), 'error'); }
     });
   }
 
@@ -56,11 +65,11 @@ function renderChatSection(container) {
 }
 
 async function renderMessages(container) {
-  container.innerHTML = '<p class="loading">Cargando testimonios...</p>';
+  skeletonSkeleton(container, 3, 'card');
   try {
     const messages = await loadMessages();
     if (messages.length === 0) {
-      container.innerHTML = '<p class="empty">Sé el primero en dejar un testimonio.</p>';
+      container.innerHTML = emptyState('ti-message-heart', 'Sé el primero en dejar un testimonio.');
       return;
     }
     container.innerHTML = '';
@@ -74,48 +83,65 @@ async function renderMessages(container) {
       el.innerHTML = `
         <div class="chat-msg-header">
           <strong>${safeName}</strong>
-          <span class="chat-time">${new Date(msg.createdAt).toLocaleDateString('es')}</span>
-          ${(isOwner || isAdmin) ? `<button class="chat-delete" data-id="${msg.id}"><i class="ti ti-trash"></i></button>` : ''}
+          <span class="chat-time">${formatChatDate(msg.createdAt)}</span>
+          ${(isOwner || isAdmin) ? `<button class="chat-delete" data-id="${msg.id}" aria-label="Eliminar mensaje"><i class="ti ti-trash"></i></button>` : ''}
         </div>
         <p class="chat-content">${safeContent}</p>
         <div class="chat-actions">
-          <button class="chat-like ${msg.userLiked ? 'liked' : ''}" data-id="${msg.id}">
+          <button class="chat-like ${msg.userLiked ? 'liked' : ''}" data-id="${msg.id}" aria-label="Me gusta">
             <i class="ti ti-heart${msg.userLiked ? '-filled' : ''}"></i> <span>${msg.likesCount}</span>
           </button>
-          <button class="chat-reply-btn" data-id="${msg.id}">Responder</button>
+          ${currentUser ? `<button class="chat-reply-btn" data-id="${msg.id}">Responder</button>` : ''}
         </div>
         <div class="chat-replies" id="replies-${msg.id}"></div>
+        ${currentUser ? `
         <div class="chat-reply-form" id="reply-form-${msg.id}" style="display:none;">
           <textarea class="reply-input" placeholder="Escribí tu respuesta..." rows="1"></textarea>
           <button class="btn-small btn-primary-solid reply-send" data-parent="${msg.id}">Enviar</button>
-        </div>
+        </div>` : ''}
       `;
       container.appendChild(el);
       el.querySelector('.chat-delete')?.addEventListener('click', async () => {
-        if (!confirm('¿Eliminar mensaje?')) return;
+        if (!(await confirmDialog('¿Eliminar este mensaje?', { confirmText: 'Eliminar', danger: true }))) return;
         try {
           await deleteMessage(msg.id);
           el.remove();
-        } catch (err) { alert(err.message); }
+          showToast('Mensaje eliminado', 'success');
+        } catch (err) { showToast(apiErrorMessage(err), 'error'); }
       });
       el.querySelector('.chat-like').addEventListener('click', async () => {
+        if (!currentUser) {
+          openAuthModal();
+          return;
+        }
+        const btn = el.querySelector('.chat-like');
+        const count = btn.querySelector('span');
+        const wasLiked = btn.classList.contains('liked');
         try {
-          await toggleLike(msg.id);
-          await renderMessages(container);
-        } catch (err) { alert(err.message); }
+          const res = await toggleLike(msg.id);
+          const isLiked = res && typeof res.liked === 'boolean' ? res.liked : !wasLiked;
+          if (res && typeof res.likesCount === 'number') {
+            count.textContent = res.likesCount;
+          } else {
+            count.textContent = Math.max(0, parseInt(count.textContent || '0', 10) + (isLiked === wasLiked ? 0 : (isLiked ? 1 : -1)));
+          }
+          btn.classList.toggle('liked', isLiked);
+          btn.querySelector('i').className = `ti ti-heart${isLiked ? '-filled' : ''}`;
+        } catch (err) { showToast(apiErrorMessage(err), 'error'); }
       });
-      el.querySelector('.chat-reply-btn').addEventListener('click', () => {
+      el.querySelector('.chat-reply-btn')?.addEventListener('click', () => {
         const form = el.querySelector('.chat-reply-form');
         form.style.display = form.style.display === 'none' ? 'flex' : 'none';
       });
-      el.querySelector('.reply-send').addEventListener('click', async () => {
+      el.querySelector('.reply-send')?.addEventListener('click', async () => {
         const replyInput = el.querySelector('.reply-input');
         const content = replyInput.value.trim();
         if (!content) return;
         try {
           await sendMessage(content, msg.id);
           replyInput.value = '';
-        } catch (err) { alert(err.message); }
+          await renderMessages(container);
+        } catch (err) { showToast(apiErrorMessage(err), 'error'); }
       });
       const repliesContainer = el.querySelector('.chat-replies');
       if (msg.replies && msg.replies.length > 0) {
@@ -127,15 +153,35 @@ async function renderMessages(container) {
           rEl.innerHTML = `
             <div class="chat-msg-header">
               <strong>${rSafeName}</strong>
-              <span class="chat-time">${new Date(reply.createdAt).toLocaleDateString('es')}</span>
+              <span class="chat-time">${formatChatDate(reply.createdAt)}</span>
             </div>
             <p class="chat-content">${rSafeContent}</p>
             <div class="chat-actions">
-              <button class="chat-like ${reply.userLiked ? 'liked' : ''}" data-id="${reply.id}">
+              <button class="chat-like ${reply.userLiked ? 'liked' : ''}" data-id="${reply.id}" aria-label="Me gusta">
                 <i class="ti ti-heart${reply.userLiked ? '-filled' : ''}"></i> <span>${reply.likesCount}</span>
               </button>
             </div>
           `;
+          rEl.querySelector('.chat-like').addEventListener('click', async () => {
+            if (!currentUser) {
+              openAuthModal();
+              return;
+            }
+            const btn = rEl.querySelector('.chat-like');
+            const count = btn.querySelector('span');
+            const wasLiked = btn.classList.contains('liked');
+            try {
+              const res = await toggleLike(reply.id);
+              const isLiked = res && typeof res.liked === 'boolean' ? res.liked : !wasLiked;
+              if (res && typeof res.likesCount === 'number') {
+                count.textContent = res.likesCount;
+              } else {
+                count.textContent = Math.max(0, parseInt(count.textContent || '0', 10) + (isLiked === wasLiked ? 0 : (isLiked ? 1 : -1)));
+              }
+              btn.classList.toggle('liked', isLiked);
+              btn.querySelector('i').className = `ti ti-heart${isLiked ? '-filled' : ''}`;
+            } catch (err) { showToast(apiErrorMessage(err), 'error'); }
+          });
           repliesContainer.appendChild(rEl);
         }
       }

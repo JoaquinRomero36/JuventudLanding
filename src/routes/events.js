@@ -8,8 +8,13 @@ router.get('/', optionalUser, async (req, res) => {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const isAdmin = req.user && req.user.role === 'admin';
+    const showAll = req.query.all === 'true' && isAdmin;
     const events = await prisma.event.findMany({
-      where: { date: { gte: today } },
+      where: {
+        date: { gte: today },
+        ...(showAll ? {} : { visible: true })
+      },
       include: {
         _count: { select: { regs: true } },
         regs: req.user
@@ -22,6 +27,7 @@ router.get('/', optionalUser, async (req, res) => {
       id: e.id, title: e.title, description: e.description,
       date: e.date, time: e.time, location: e.location,
       max_participants: e.maxParticipants,
+      visible: e.visible,
       registrationCount: e._count.regs,
       registered: req.user ? e.regs && e.regs.length > 0 : false
     }));
@@ -33,7 +39,7 @@ router.get('/', optionalUser, async (req, res) => {
 
 router.post('/', requireUser, requireAdmin, async (req, res) => {
   try {
-    const { title, description, date, time, location, max_participants } = req.body;
+    const { title, description, date, time, location, max_participants, visible } = req.body;
     const eventDate = new Date(date);
     if (isNaN(eventDate.getTime())) {
       return res.status(400).json({ error: 'Fecha inválida' });
@@ -47,6 +53,7 @@ router.post('/', requireUser, requireAdmin, async (req, res) => {
       data: {
         title, description: description || '', time: time || '',
         location: location || '', maxParticipants: max_participants || 0,
+        visible: visible !== undefined ? visible : true,
         date: eventDate, createdBy: req.user.id
       }
     });
@@ -58,7 +65,7 @@ router.post('/', requireUser, requireAdmin, async (req, res) => {
 
 router.put('/', requireUser, requireAdmin, async (req, res) => {
   try {
-    const { id, title, description, date, time, location, max_participants } = req.body;
+    const { id, title, description, date, time, location, max_participants, visible } = req.body;
     const eventDate = new Date(date);
     if (isNaN(eventDate.getTime())) {
       return res.status(400).json({ error: 'Fecha inválida' });
@@ -68,13 +75,15 @@ router.put('/', requireUser, requireAdmin, async (req, res) => {
     if (eventDate < today) {
       return res.status(400).json({ error: 'La fecha del evento no puede ser en el pasado' });
     }
+    const updateData = {
+      title, description, time, location,
+      maxParticipants: max_participants,
+      date: eventDate
+    };
+    if (visible !== undefined) updateData.visible = visible;
     const event = await prisma.event.update({
       where: { id },
-      data: {
-        title, description, time, location,
-        maxParticipants: max_participants,
-        date: eventDate
-      }
+      data: updateData
     });
     res.json({ data: event });
   } catch (err) {

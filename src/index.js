@@ -27,10 +27,13 @@ app.use('/api/likes', likesRoutes);
 app.use('/api/photos', photosRoutes);
 app.use('/api/registrations', registrationsRoutes);
 
-app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(express.static(path.join(__dirname, '..'), {
+  dotfiles: 'ignore',
+  index: false
+}));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
 async function start() {

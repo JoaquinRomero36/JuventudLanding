@@ -1,6 +1,10 @@
 node_modules/
 .env
 *.db
+*.db.bak
+
+# Local photos (not part of the repo)
+fotosJuven/
 
 # Local Netlify folder
 .netlify

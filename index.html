@@ -3,9 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Juventud CBA</title>
+<title>Juventud CBA · Jóvenes 15 a 35</title>
+<meta name="description" content="Worship, palabra y comunidad para jóvenes de 15 a 35 en Córdoba Capital. Cuatro congresos al año y encuentros que valen la pena.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Juventud CBA">
+<meta property="og:description" content="Worship, palabra y comunidad. Un espacio real para jóvenes de 15 a 35 en Córdoba Capital.">
+<meta property="og:image" content="logo-jvtd.png">
+<meta name="theme-color" content="#F4EADB"><link rel="icon" type="image/png" href="logo-jvtd.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.29.0/dist/tabler-icons.min.css">
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -15,17 +23,22 @@
 
   <nav class="nav">
     <img src="logo-jvtd.png" alt="Juventud CBA" class="nav-logo-img">
-    <button id="menu-toggle" class="menu-toggle" aria-label="Menú">
-      <span></span><span></span><span></span>
-    </button>
     <div class="nav-links" id="nav-links">
       <a href="#sobre">Qué es</a>
+      <a href="#events-section">Eventos</a>
+      <a href="#testimonials-section">Testimonios</a>
       <a href="#galeria">Fotos</a>
       <a href="#faqs">Dudas</a>
       <a href="#admin" id="admin-link" style="display:none">Admin</a>
+      <div id="auth-area-mobile" class="auth-area-mobile"></div>
     </div>
-    <div id="auth-area">
-      <button id="login-btn" class="nav-login">Iniciar sesión</button>
+    <div class="nav-right">
+      <button id="menu-toggle" class="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="nav-links">
+        <span></span><span></span><span></span>
+      </button>
+      <div id="auth-area">
+        <button id="login-btn" class="nav-login">Iniciar sesión</button>
+      </div>
     </div>
   </nav>
 
@@ -33,8 +46,12 @@
     <div class="hero-content">
       <span class="eyebrow">Córdoba Capital · 15 a 35 años</span>
       <h1 class="hero-title">JUVENTUD</h1>
-      <p class="hero-subtitle">Un sábado a la semana que vale la pena.</p>
-      <p class="hero-sub">Worship, palabra y comunidad. Empezamos hace un año y ya somos una familia. Sumate al próximo sábado.</p>
+      <p class="hero-subtitle">Cada encuentro vale la pena.</p>
+      <p class="hero-sub">Worship, palabra y comunidad. Ya somos una familia y te esperamos en el próximo evento.</p>
+      <div class="hero-ctas">
+        <a href="#events-section" class="btn-primary">Ver próximos encuentros</a>
+        <a href="#sobre" class="btn-secondary">Conocé el proyecto</a>
+      </div>
     </div>
   </header>
 
@@ -70,9 +87,11 @@
     <div id="chat-container"></div>
   </section>
 
-  <section class="section reveal" id="galeria">
+  <section class="section reveal section-gallery" id="galeria">
     <span class="eyebrow">Galería</span>
     <h2>Momentos del último encuentro.</h2>
+    <p class="section-lead">Mirá, reviví y compartí lo que fue la juntada.</p>
+    <span id="gallery-count" class="gallery-count"></span>
     <div id="home-gallery"></div>
     <div class="upload-box">
       <p style="margin-bottom:12px;">¿Tenés fotos? Subilas acá.</p>
@@ -80,7 +99,7 @@
     </div>
   </section>
 
-  <section class="section section-alt" id="faqs">
+  <section class="section section-alt reveal" id="faqs">
     <span class="eyebrow">Preguntas frecuentes</span>
     <h2>¿Tenés dudas?</h2>
     <div class="faq-list">
@@ -90,7 +109,7 @@
       </div>
       <div class="faq-item">
         <button class="faq-question">¿Qué pasa si voy solo, sin conocer a nadie? <span>+</span></button>
-        <div class="faq-answer"><p>La mayoría llega así. El after de los sábados existe justamente para eso.</p></div>
+        <div class="faq-answer"><p>La mayoría llega así. Los after al terminar cada evento existen justamente para eso.</p></div>
       </div>
 
     </div>
@@ -100,16 +119,16 @@
     <h2>Conoce nuestras redes</h2>
     <div class="footer-socials">
       <div class="socials-row">
-        <a href="#" target="_blank" class="social-btn social-whatsapp" title="WhatsApp">
+        <a href="#" target="_blank" rel="noopener" class="social-btn social-whatsapp" title="WhatsApp">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"/><path d="M9 10a.5.5 0 0 0 0 1v0a.5.5 0 0 0 0-1" stroke-width="1"/><path d="M12 10a.5.5 0 0 0 0 1v0a.5.5 0 0 0 0-1" stroke-width="1"/><path d="M15 10a.5.5 0 0 0 0 1v0a.5.5 0 0 0 0-1" stroke-width="1"/></svg>
         </a>
-        <a href="#" target="_blank" class="social-btn social-ig" title="Instagram">
+        <a href="#" target="_blank" rel="noopener" class="social-btn social-ig" title="Instagram">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.3" fill="currentColor" stroke="none"/></svg>
         </a>
-        <a href="#" target="_blank" class="social-btn social-yt" title="YouTube">
+        <a href="#" target="_blank" rel="noopener" class="social-btn social-yt" title="YouTube">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a4 4 0 0 1 4-4h12a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><polygon points="10,9 16,12 10,15" fill="currentColor" stroke="none"/></svg>
         </a>
-        <a href="#" target="_blank" class="social-btn social-spotify" title="Spotify">
+        <a href="#" target="_blank" rel="noopener" class="social-btn social-spotify" title="Spotify">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 11.5c3-.5 5.5.5 8 2" stroke-width="1.8"/><path d="M9.5 14c2.5-.5 4.5 0 6.5 1.5" stroke-width="1.8"/><path d="M7 9c4-1 7 0 10 3" stroke-width="1.8"/></svg>
         </a>
       </div>
@@ -119,15 +138,16 @@
 
 </div>
 
-<div id="auth-modal" class="modal" style="display:none;">
+<div id="auth-modal" class="modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
   <div class="modal-backdrop"></div>
   <div class="modal-content" id="auth-modal-content"></div>
 </div>
 
-<div id="upload-modal" class="modal" style="display:none;">
+<div id="upload-modal" class="modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="upload-modal-title">
   <div class="modal-backdrop"></div>
   <div class="modal-content" style="text-align:left;">
-    <h2>Subir foto</h2>
+    <button class="modal-close" data-close-modal="upload-modal" aria-label="Cerrar">×</button>
+    <h2 id="upload-modal-title">Subir foto</h2>
     <div id="upload-modal-body">
       <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">Compartí tus fotos del último encuentro.</p>
       <input type="text" id="upload-modal-name" class="input" placeholder="Tu nombre">
@@ -147,7 +167,7 @@
 <script src="js/events.js"></script>
 <script src="js/photos.js"></script>
 <script src="js/chat.js"></script>
-<script src="js/admin.js"></script>
+<script src="js/admin.js?v=3"></script>
 <script src="js/app.js"></script>
 <script src="script.js"></script>
 </body>

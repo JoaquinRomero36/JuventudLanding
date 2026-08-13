@@ -29,6 +29,7 @@ model Event {
   time            String         @default("")
   location        String         @default("")
   maxParticipants Int            @default(0)
+  visible         Boolean        @default(true)
   createdBy       String
   createdAt       DateTime       @default(now())
   creator         Profile        @relation(fields: [createdBy], references: [id])
@@ -50,6 +51,8 @@ model Photo {
   url         String
   description String   @default("")
   approved    Boolean  @default(false)
+  featured    Boolean  @default(false)
+  sortOrder   Int      @default(0)
   uploadedBy  String
   createdAt   DateTime @default(now())
   uploader    Profile  @relation(fields: [uploadedBy], references: [id])
